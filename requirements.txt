@@ -1,1 +1,4 @@
 openpyxl
+pydot
+gprof2dot
+# graphviz "sudo apt install graphviz"

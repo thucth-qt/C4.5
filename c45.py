@@ -1,3 +1,4 @@
+#https://stackoverflow.com/questions/24657384/plotting-a-decision-tree-with-pydot
 import math
 import numpy as np
 import pandas as pd
@@ -19,6 +20,7 @@ class C45:
 		self.numAttributes = -1 
 		self.attributes = []
 		self.tree = None
+		self.tree_dict={}
 
 	def load_data(self, attributes:list, class_col):
 		df = pd.read_excel(self.filePathToData, sheet_name=0, index_col=None, header=0, usecols=attributes+[class_col])  
@@ -50,9 +52,16 @@ class C45:
 			print(indent+"|____" + node.criterion + " > " + str(node.threshold))
 		self.printNode(rightChild, indent + "	")
 	
-	
-			
+	def generate_tree_dict(self):
+		self._generate_tree_dict(self.tree)
 
+	def _generate_tree_dict(self, node):
+		if node.is_leaf:
+			return node.label
+
+		self.tree_dict[node.]
+	
+		
 	def generateTree(self):
 		self.tree = self.recursiveGenerateTree(self.data, self.attributes)
 
