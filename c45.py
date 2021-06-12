@@ -64,12 +64,12 @@ class C45:
 
 		branch ={}
 		if leftChild.is_leaf:
-			branch[leftChild.criterion+ "\n<=" + str(leftChild.threshold)+"<"] = leftChild.label
+			branch[leftChild.criterion+ "\n<=" + str(leftChild.threshold)+"<"] = leftChild.label + "\n" + str(leftChild.pure_degree)
 		else:
 			branch[leftChild.criterion+ "\n<=" + str(leftChild.threshold)+"<"]= self.__generate_tree_dict(leftChild)
 		
 		if rightChild.is_leaf:
-			branch[rightChild.criterion+ "\n<=" + str(rightChild.threshold)+"<"] = rightChild.label
+			branch[rightChild.criterion+ "\n<=" + str(rightChild.threshold)+"<"] = rightChild.label + "\n" + str(rightChild.pure_degree)
 		else:
 			branch[rightChild.criterion+ "\n<=" + str(rightChild.threshold)+"<"]= self.__generate_tree_dict(rightChild)
 
