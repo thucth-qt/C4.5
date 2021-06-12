@@ -3,10 +3,11 @@ import numpy as np
 import pandas as pd
 
 class Node:
-	def __init__(self,isLeaf, label, threshold):
+	def __init__(self,is_leaf=False, criterion=None, label="", threshold=None):
+		self.criterion = criterion
 		self.label = label
 		self.threshold = threshold
-		self.isLeaf = isLeaf
+		self.is_leaf = is_leaf
 		self.children = []
 class C45:
 	"""Creates a bi-decision tree with C4.5 algorithm"""
@@ -27,44 +28,40 @@ class C45:
 
 	def printTree(self):
 		self.printNode(self.tree)
-
+	
 	def printNode(self, node, indent=""):
-		if node.isLeaf: return 
+		if node.is_leaf: return 
 
 		leftChild = node.children[0]
 		rightChild = node.children[1]
-		if leftChild.isLeaf:
-			print(indent + node.label + " <= " + str(node.threshold) + " : " + leftChild.label)
-		else:
-			print(indent + node.label + " <= " + str(node.threshold)+" : ")
-			self.printNode(leftChild, indent + "	")
+		print(indent+"|____" + node.criterion + " <= " + str(node.threshold) + " : " + leftChild.label)
+		self.printNode(leftChild, indent + "|	")
 
-		if rightChild.isLeaf:
-			print(indent + node.label + " > " + str(node.threshold) + " : " + rightChild.label)
-		else:
-			print(indent + node.label + " > " + str(node.threshold) + " : ")
-			self.printNode(rightChild , indent + "	")
+		print(indent+"|____" + node.criterion + " > " + str(node.threshold) + " : " + rightChild.label)
+		self.printNode(rightChild, indent + "	")
+	
+			
 
 	def generateTree(self):
 		self.tree = self.recursiveGenerateTree(self.data, self.attributes)
 
-	def recursiveGenerateTree(self, curData, curAttributes):
+	def recursiveGenerateTree(self, curData, curAttributes, criterion=None):
 		if len(curData) == 0:
-			#No any data sample for this curAttributes. (only in decrete attr)
-			return Node(True, "Fail", None)
+			#No any data sample for this curAttributes. (only in decrete criterion)
+			return None
 
 		is_pure, class_ = self.allSameClass(curData)
 		if is_pure:
-			return Node(True, class_, None)
+			return Node(is_leaf=True,criterion=criterion, label = class_)
 		elif len(curAttributes) == 0:
 			main_class = self.get_main_class(curData)
-			return Node(True, main_class, None)
+			return Node(is_leaf = True, criterion=criterion, label = main_class)
 		else:
 			(best_attr, threshold, Sis) = self.split_data(curData, curAttributes)
 			remainingAttributes = curAttributes[:]
 			remainingAttributes.remove(best_attr)
-			node = Node(False, best_attr, threshold)
-			node.children = [self.recursiveGenerateTree(Si, remainingAttributes) for Si in Sis]
+			node = Node(is_leaf=False, criterion=best_attr, threshold=threshold)
+			node.children = [self.recursiveGenerateTree(Si, remainingAttributes, criterion=best_attr) for Si in Sis]
 			return node
 
 	def get_main_class(self, S):
