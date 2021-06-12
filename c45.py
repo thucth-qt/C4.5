@@ -3,12 +3,13 @@ import numpy as np
 import pandas as pd
 
 class Node:
-	def __init__(self,is_leaf=False, criterion=None, label="", threshold=None):
+	def __init__(self,is_leaf=False, criterion=None, label="", threshold=None, pure_degree=""):
 		self.criterion = criterion
 		self.label = label
 		self.threshold = threshold
 		self.is_leaf = is_leaf
 		self.children = []
+		self.pure_degree = pure_degree
 class C45:
 	"""Creates a bi-decision tree with C4.5 algorithm"""
 	def __init__(self, pathToData):
@@ -27,7 +28,7 @@ class C45:
 		self.numAttributes = len(attributes)
 
 	def printTree(self):
-		self.printNode(self.tree)
+		self.printNode_(self.tree)
 	
 	def printNode(self, node, indent=""):
 		if node.is_leaf: return 
@@ -39,36 +40,58 @@ class C45:
 
 		print(indent+"|____" + node.criterion + " > " + str(node.threshold) + " : " + rightChild.label)
 		self.printNode(rightChild, indent + "	")
+
+	def printNode_(self, node, indent=""):
+		if node.is_leaf: 
+			# return print(indent+"|____" + node.criterion + " <= " + str(node.threshold) + " : " + node.label)
+			return 
+		
+		leftChild = node.children[0]
+		rightChild = node.children[1]
+		if leftChild.is_leaf:
+			print(indent+"|____" + node.criterion + " <= " + str(node.threshold) + " : " + leftChild.label + " (" +str(leftChild.pure_degree)+ ")")
+		else:
+			print(indent+"|____" + node.criterion + " <= " + str(node.threshold))
+		self.printNode_(leftChild, indent + "|	")
+		
+		if rightChild.is_leaf:
+			print(indent+"|____" + node.criterion + " > " + str(node.threshold) + " : " + rightChild.label+ " (" + str(rightChild.pure_degree) + ")")
+			print(indent)
+		else:
+			print(indent+"|____" + node.criterion + " > " + str(node.threshold))
+		self.printNode_(rightChild, indent + "	")
+	
 	
 			
 
 	def generateTree(self):
 		self.tree = self.recursiveGenerateTree(self.data, self.attributes)
 
-	def recursiveGenerateTree(self, curData, curAttributes, criterion=None):
+	def recursiveGenerateTree(self, curData, curAttributes, criterion=None, threshold= None):
 		if len(curData) == 0:
 			#No any data sample for this curAttributes. (only in decrete criterion)
 			return None
 
 		is_pure, class_ = self.allSameClass(curData)
 		if is_pure:
-			return Node(is_leaf=True,criterion=criterion, label = class_)
+			return Node(is_leaf=True,criterion=criterion, label = class_, pure_degree=100.0, threshold=threshold)
 		elif len(curAttributes) == 0:
-			main_class = self.get_main_class(curData)
-			return Node(is_leaf = True, criterion=criterion, label = main_class)
+			main_class, pure_degree = self.get_main_class(curData)
+			return Node(is_leaf = True, criterion=criterion, label = main_class, pure_degree=pure_degree, threshold=threshold)
 		else:
 			(best_attr, threshold, Sis) = self.split_data(curData, curAttributes)
 			remainingAttributes = curAttributes[:]
 			remainingAttributes.remove(best_attr)
 			node = Node(is_leaf=False, criterion=best_attr, threshold=threshold)
-			node.children = [self.recursiveGenerateTree(Si, remainingAttributes, criterion=best_attr) for Si in Sis]
+			node.children = [self.recursiveGenerateTree(Si, remainingAttributes, criterion=best_attr, threshold=threshold) for Si in Sis]
 			return node
 
 	def get_main_class(self, S):
 		labels = [row[-1] for row in S]
 		classes, count = np.unique(labels, return_counts=True)
 		max_idx = np.argmax(count)
-		return classes[max_idx]
+		pure_degree = round(count[max_idx]/sum(count)*100, ndigits=2)
+		return classes[max_idx], pure_degree
 
 	def allSameClass(self, data):
 		'''
