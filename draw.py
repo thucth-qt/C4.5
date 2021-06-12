@@ -26,7 +26,7 @@ def walk_dictionaryv2(graph, dictionary, parent_node=None):
                 to_name = str(k) + '_' + str(dictionary[k]) # unique name
                 to_label = str(dictionary[k])
 
-                node_to = pydot.Node(to_name, label=to_label, shape='box')
+                node_to = pydot.Node(to_name, label=to_label, shape='box', style = 'filled', fillcolor = '#CCCDC6' if isinstance(dictionary[k], dict) else '#CCCDC6')
                 graph.add_node(node_to)
                 graph.add_edge(pydot.Edge(node_from, node_to))
 

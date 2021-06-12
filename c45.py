@@ -57,12 +57,23 @@ class C45:
 	
 	def __generate_tree_dict(self, node:Node):
 		if node.is_leaf:
-			return node.label
+			return 
 
-		leftChild = node.children[0]
-		rightChild = node.children[1]
-		return {"<="+str(node.threshold): {leftChild.criterion: self.__generate_tree_dict(leftChild)},
-                ">"+str(node.threshold): {rightChild.criterion: self.__generate_tree_dict(rightChild)}}
+		leftChild:Node = node.children[0]
+		rightChild:Node = node.children[1]
+
+		branch ={}
+		if leftChild.is_leaf:
+			branch["<="+str(node.threshold)] = leftChild.label
+		else:
+			branch["<="+str(node.threshold)] = {leftChild.criterion: self.__generate_tree_dict(leftChild)}
+		
+		if rightChild.is_leaf:
+			branch[">"+str(node.threshold)] = rightChild.label
+		else:
+			branch[">"+str(node.threshold)] = {rightChild.criterion: self.__generate_tree_dict(rightChild)}
+
+		return branch
 	
 	def draw_tree(self):
 		plot_tree(self.tree_dict, "bi-decision tree")
