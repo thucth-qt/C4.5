@@ -2,6 +2,7 @@
 import math
 import numpy as np
 import pandas as pd
+from draw import plot_tree
 
 class Node:
 	def __init__(self,is_leaf=False, criterion=None, label="", threshold=None, pure_degree=""):
@@ -34,7 +35,6 @@ class C45:
 	
 	def printNode(self, node, indent=""):
 		if node.is_leaf: 
-			# return print(indent+"|____" + node.criterion + " <= " + str(node.threshold) + " : " + node.label)
 			return 
 		
 		leftChild = node.children[0]
@@ -53,15 +53,20 @@ class C45:
 		self.printNode(rightChild, indent + "	")
 	
 	def generate_tree_dict(self):
-		self._generate_tree_dict(self.tree)
-
-	def _generate_tree_dict(self, node):
+		self.tree_dict[self.tree.criterion] = self.__generate_tree_dict(self.tree)
+	
+	def __generate_tree_dict(self, node:Node):
 		if node.is_leaf:
 			return node.label
 
-		self.tree_dict[node.]
+		leftChild = node.children[0]
+		rightChild = node.children[1]
+		return {"<="+str(node.threshold): {leftChild.criterion: self.__generate_tree_dict(leftChild)},
+                ">"+str(node.threshold): {rightChild.criterion: self.__generate_tree_dict(rightChild)}}
 	
-		
+	def draw_tree(self):
+		plot_tree(self.tree_dict, "bi-decision tree")
+
 	def generateTree(self):
 		self.tree = self.recursiveGenerateTree(self.data, self.attributes)
 

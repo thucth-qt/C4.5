@@ -1,6 +1,5 @@
 import pydot
 
-tree= {'salary': {'41k-45k': 'junior', '46k-50k': {'department': {'marketing': 'senior', 'sales': 'senior', 'systems': 'junior'}}, '36k-40k': 'senior', '26k-30k': 'junior', '31k-35k': 'junior', '66k-70k': 'senior'}}
 
 def walk_dictionaryv2(graph, dictionary, parent_node=None):
     '''
@@ -51,5 +50,8 @@ def plot_tree(tree, name):
 
     graph.write_png(name+'.png')
 
+if __name__ =="__main__":
+    tree = {'salary': {'41k-45k': 'junior', '46k-50k': {'department': {'marketing': 'senior', 'sales': 'senior',
+                                                                   'systems': 'junior'}}, '36k-40k': 'senior', '26k-30k': 'junior', '31k-35k': 'junior', '66k-70k': 'senior'}}
 
-plot_tree(tree,'name')
+    plot_tree(tree,'name')
