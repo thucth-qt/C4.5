@@ -30,6 +30,9 @@ class C45:
 					self.data.append(row)
 
 	def preprocessData(self):
+		'''
+			convert real value into float
+		'''
 		for index,row in enumerate(self.data):
 			for attr_index in range(self.numAttributes):
 				if(not self.isAttrDiscrete(self.attributes[attr_index])):
@@ -203,5 +206,3 @@ class Node:
 		self.threshold = threshold
 		self.isLeaf = isLeaf
 		self.children = []
-
-
