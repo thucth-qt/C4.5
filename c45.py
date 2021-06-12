@@ -131,7 +131,8 @@ class C45:
 			curData.sort(key = lambda x: x[indexOfAttribute])
 			for j in range(0, len(curData) - 1):
 				if curData[j][indexOfAttribute] != curData[j+1][indexOfAttribute]:
-					threshold = (curData[j][indexOfAttribute] + curData[j+1][indexOfAttribute]) / 2
+					# threshold = (curData[j][indexOfAttribute] + curData[j+1][indexOfAttribute]) / 2
+					threshold = curData[j][indexOfAttribute]
 					less = []
 					greater = []
 					for row in curData:
