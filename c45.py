@@ -28,20 +28,9 @@ class C45:
 		self.numAttributes = len(attributes)
 
 	def printTree(self):
-		self.printNode_(self.tree)
+		self.printNode(self.tree)
 	
 	def printNode(self, node, indent=""):
-		if node.is_leaf: return 
-
-		leftChild = node.children[0]
-		rightChild = node.children[1]
-		print(indent+"|____" + node.criterion + " <= " + str(node.threshold) + " : " + leftChild.label)
-		self.printNode(leftChild, indent + "|	")
-
-		print(indent+"|____" + node.criterion + " > " + str(node.threshold) + " : " + rightChild.label)
-		self.printNode(rightChild, indent + "	")
-
-	def printNode_(self, node, indent=""):
 		if node.is_leaf: 
 			# return print(indent+"|____" + node.criterion + " <= " + str(node.threshold) + " : " + node.label)
 			return 
@@ -52,14 +41,14 @@ class C45:
 			print(indent+"|____" + node.criterion + " <= " + str(node.threshold) + " : " + leftChild.label + " (" +str(leftChild.pure_degree)+ ")")
 		else:
 			print(indent+"|____" + node.criterion + " <= " + str(node.threshold))
-		self.printNode_(leftChild, indent + "|	")
+		self.printNode(leftChild, indent + "|	")
 		
 		if rightChild.is_leaf:
 			print(indent+"|____" + node.criterion + " > " + str(node.threshold) + " : " + rightChild.label+ " (" + str(rightChild.pure_degree) + ")")
 			print(indent)
 		else:
 			print(indent+"|____" + node.criterion + " > " + str(node.threshold))
-		self.printNode_(rightChild, indent + "	")
+		self.printNode(rightChild, indent + "	")
 	
 	
 			
