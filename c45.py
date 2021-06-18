@@ -15,13 +15,19 @@ class Node:
 class C45:
 	"""Creates a bi-decision tree with C4.5 algorithm"""
 
-	def __init__(self, attributes, data, classes):
+	def __init__(self):
+		self.data = None
+		self.classes = None
+		self.numAttributes = None
+		self.attributes = None
+		self.tree = None
+		self.tree_dict={}
+
+	def load_data(self, attributes, data, classes):
 		self.data = data
 		self.classes = classes
 		self.numAttributes = len(attributes)
 		self.attributes = attributes
-		self.tree = None
-		self.tree_dict={}
 
 	def printTree(self):
 		self.printNode(self.tree)
@@ -71,7 +77,7 @@ class C45:
 	def draw_tree(self):
 		plot_tree(self.tree_dict, "bi-decision tree")
 
-	def generateTree(self):
+	def generate_tree(self):
 		self.tree = self.recursiveGenerateTree(self.data, self.attributes)
 
 	def recursiveGenerateTree(self, curData, curAttributes, criterion=None, threshold= None):
@@ -115,8 +121,7 @@ class C45:
 	def split_data(self, curData, curAttributes):
 		splitted = []
 		maxEnt = -1*float("inf")
-		best_attribute = -1
-		#None for discrete attributes, threshold value for continuous attributes
+		best_attribute = curAttributes[0]
 		best_threshold = None
 		for attribute in curAttributes:
 			indexOfAttribute = self.attributes.index(attribute)
@@ -124,7 +129,6 @@ class C45:
 			curData.sort(key = lambda x: x[indexOfAttribute])
 			for j in range(0, len(curData) - 1):
 				if curData[j][indexOfAttribute] != curData[j+1][indexOfAttribute]:
-					# threshold = (curData[j][indexOfAttribute] + curData[j+1][indexOfAttribute]) / 2
 					threshold = curData[j][indexOfAttribute]
 					less = []
 					greater = []
@@ -142,8 +146,11 @@ class C45:
 		return (best_attribute,best_threshold,splitted)
 
 	def gain(self,S, Sis):
-
 		E_S = self.entropy(S)
+		
+		if len(Sis[0])==0 or len(Sis[1])==0:
+			return E_S-0
+
 
 		total_E_Si = sum([len(Si)/len(S)*self.entropy(Si)  for Si in Sis])
 
@@ -159,3 +166,20 @@ class C45:
 		entropy = -sum([si_/S * math.log(si_/S,2) for si_ in Si])
 		
 		return entropy
+
+	def fit(self, data):
+		if len(data) != self.numAttributes:
+			raise Exception("Data sample is not correct value!")
+
+		node: Node = self.tree
+		considered_attr = 0
+		while (considered_attr < self.numAttributes):
+			if len(node.children) == 0:
+				return node.label
+			considered_attr += 1
+			idx_attr = self.attributes.index(node.criterion)
+			if (data[idx_attr] <= node.threshold):
+				node = node.children[0]
+			else:
+				node = node.children[1]
+		return node.label
