@@ -12,10 +12,18 @@ c1 = C45()
 
 trainer = Trainer(c1, loader)
 
+best_c1, best_acc, acc_kfold = trainer.train(True)
+
+print(best_c1.fit([17, 5, 9, 11, 50]))
+print(best_acc)
+print(acc_kfold)
+
+
 c1, acc = trainer.train(False)
 
 print(c1.fit([17, 5, 9, 11, 50]))
 print(acc)
+
 # c1.generate_tree_dict()
 # c1.printTree()
 # c1.draw_tree()

@@ -20,12 +20,12 @@ class Trainer:
                 model.load_data(attributes=self.data_loader.attributes,
                                      data=data, classes=self.data_loader.classes)
                 model.generate_tree()
-                acc = self.validate(val)
+                acc = self.validate(model, val)
                 scores.append(acc)
                 if acc>best_acc:
                     best_acc=acc
                     best_model=model
-            k_fold_acc = scores.mean()
+            k_fold_acc = sum(scores)/len(scores)
             return best_model, best_acc, k_fold_acc
 
     def validate(self, model, val):
