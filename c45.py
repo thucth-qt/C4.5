@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pandas as pd
 from draw import plot_tree
-
+import random
 class Node:
 	def __init__(self,is_leaf=False, criterion=None, label="", threshold=None, pure_degree=""):
 		self.criterion = criterion
@@ -17,6 +17,8 @@ class C45:
 	def __init__(self, pathToData):
 		self.filePathToData = pathToData
 		self.data = []
+		self.data_val = []
+		self.data_total=[]
 		self.classes = []
 		self.numAttributes = -1 
 		self.attributes = []
@@ -26,10 +28,25 @@ class C45:
 	def load_data(self, attributes:list, class_col):
 		df = pd.read_excel(self.filePathToData, sheet_name=0, index_col=None, header=0, usecols=attributes+[class_col])  
 		self.attributes = attributes
-		self.data = df.values.tolist()
+		self.data_total = df.values.tolist()
 		self.classes = list(set(df.iloc[:,-1]))
 		self.numAttributes = len(attributes)
+	def split_dataset(self, val:float):
+		random.shuffle(self.data_total)
+		num_of_val = int(len(self.data_total) * val)
+		k = int(1/val)
 
+		self.vals=[]
+		self.datas=[]
+		for indx in range(k):
+			val_slice = (indx*num_of_val, (indx+1)*num_of_val)
+			if indx == k-1:
+				self.vals.append(self.data_total[val_slice[0]:])
+				self.datas.append(self.data_total[:val_slice[0]])
+			else:
+				self.vals.append(self.data_total[val_slice[0]:val_slice[1]])
+				self.datas.append(self.data_total[:val_slice[0]]+self.data_total[val_slice[1]:])
+	
 	def printTree(self):
 		self.printNode(self.tree)
 	
@@ -78,8 +95,8 @@ class C45:
 	def draw_tree(self):
 		plot_tree(self.tree_dict, "bi-decision tree")
 
-	def generateTree(self):
-		self.tree = self.recursiveGenerateTree(self.data, self.attributes)
+	def generateTree(self, data, attributes):
+		return self.recursiveGenerateTree(data, attributes)
 
 	def recursiveGenerateTree(self, curData, curAttributes, criterion=None, threshold= None):
 		if len(curData) == 0:
@@ -93,7 +110,7 @@ class C45:
 			main_class, pure_degree = self.get_main_class(curData)
 			return Node(is_leaf = True, criterion=criterion, label = main_class, pure_degree=pure_degree, threshold=threshold)
 		else:
-			(best_attr, threshold, Sis) = self.split_data(curData, curAttributes)
+			(best_attr, threshold, Sis) = self.partition_data(curData, curAttributes)
 			remainingAttributes = curAttributes[:]
 			remainingAttributes.remove(best_attr)
 			node = Node(is_leaf=False, criterion=best_attr, threshold=threshold)
@@ -119,7 +136,7 @@ class C45:
 				return False, None
 		return True, data[0][-1]
 
-	def split_data(self, curData, curAttributes):
+	def partition_data(self, curData, curAttributes):
 		splitted = []
 		maxEnt = -1*float("inf")
 		best_attribute = -1
@@ -166,3 +183,28 @@ class C45:
 		entropy = -sum([si_/S * math.log(si_/S,2) for si_ in Si])
 		
 		return entropy
+
+	def fit(self, data):
+		if len(data) != self.numAttributes:
+			raise Exception("Data sample is not correct value!")
+
+		node:Node  = self.tree
+		considered_attr = 0
+		while (considered_attr < self.numAttributes):
+			if len(node.children)==0:
+				return node.label
+			considered_attr+=1
+			idx_attr = self.attributes.index(node.criterion)
+			if (data[idx_attr] <= node.threshold):
+				node=node.children[0]
+			else:
+				node = node.children[1]
+		return node.label
+
+	def train(self, k_fold: bool):
+		if k_fold is True:
+			pass
+		else:
+			self.tree = self.generateTree(self.datas[0], self.attributes)
+	def validate(self, train_set, val_set):
+		self.tree
