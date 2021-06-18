@@ -14,21 +14,14 @@ class Node:
 		self.pure_degree = pure_degree
 class C45:
 	"""Creates a bi-decision tree with C4.5 algorithm"""
-	def __init__(self, pathToData):
-		self.filePathToData = pathToData
-		self.data = []
-		self.classes = []
-		self.numAttributes = -1 
-		self.attributes = []
+
+	def __init__(self, attributes, data, classes):
+		self.data = data
+		self.classes = classes
+		self.numAttributes = len(attributes)
+		self.attributes = attributes
 		self.tree = None
 		self.tree_dict={}
-
-	def load_data(self, attributes:list, class_col):
-		df = pd.read_excel(self.filePathToData, sheet_name=0, index_col=None, header=0, usecols=attributes+[class_col])  
-		self.attributes = attributes
-		self.data = df.values.tolist()
-		self.classes = list(set(df.iloc[:,-1]))
-		self.numAttributes = len(attributes)
 
 	def printTree(self):
 		self.printNode(self.tree)
