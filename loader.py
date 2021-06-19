@@ -2,8 +2,19 @@ import pandas as pd
 import random
 
 class Loader:
-    def __init__(self, pathToData:str, attributes: list, class_col:str, val_ratio:int=0.1):
-        self.filePathToData = pathToData
+    '''
+    This class is to load data and feed data into model (C4.5)
+    '''
+    def __init__(self, path_to_data:str, attributes: list, class_col:str, val_ratio:int=0.1):
+        '''
+            Input:
+                path_to_data: directory containing data
+                attributes: list of strings that column name. Example ["HK01", "HK02"]
+                class_col: String that is Name of column contain label.
+                val_ratio: val / data_total, this will divide data_total into training and validation set.
+
+        '''
+        self.filePathToData = path_to_data
         self.val_ratio = val_ratio
         self.attributes = attributes
         self.class_col = class_col
@@ -13,15 +24,15 @@ class Loader:
         self.vals = []
         self.datas = []
 
-        self.load_data()
-        self.split_dataset()
+        self.__load_data()
+        self.__split_dataset()
     
-    def load_data(self):
+    def __load_data(self):
         df = pd.read_excel(self.filePathToData, sheet_name=0, index_col=None, header=0, usecols=self.attributes+[self.class_col])
         self.data_total = df.values.tolist()
         self.classes = list(set(df.iloc[:, -1]))
 
-    def split_dataset(self):
+    def __split_dataset(self):
         # random.shuffle(self.data_total)
         val_ = int(self.val_ratio*10)
         data_ = 10 - val_
