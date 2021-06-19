@@ -22,16 +22,11 @@ class Loader:
         self.classes = list(set(df.iloc[:, -1]))
 
     def split_dataset(self):
-        random.shuffle(self.data_total)
-        num_of_val = int(len(self.data_total) * self.val_ratio)
-        k = int(1/self.val_ratio)
-        
-        for indx in range(k):
-            val_slice = (indx*num_of_val, (indx+1)*num_of_val)
-            if indx == k-1:
-                self.vals.append(self.data_total[val_slice[0]:])
-                self.datas.append(self.data_total[:val_slice[0]])
-            else:
-                self.vals.append(self.data_total[val_slice[0]:val_slice[1]])
-                self.datas.append(
-                    self.data_total[:val_slice[0]]+self.data_total[val_slice[1]:])
+        # random.shuffle(self.data_total)
+        val_ = int(self.val_ratio*10)
+        data_ = 10 - val_
+        part_ = len(self.data_total)//(val_+data_)
+        data_pad = self.data_total+self.data_total
+        for part in range(val_+data_ -1):
+            self.vals.append(data_pad[part*part_:(part+val_)*part_])
+            self.datas.append(data_pad[(part+val_)*part_:(part+val_+data_)*part_])

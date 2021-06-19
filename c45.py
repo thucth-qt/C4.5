@@ -74,8 +74,8 @@ class C45:
 
 		return branch
 	
-	def draw_tree(self):
-		plot_tree(self.tree_dict, "bi-decision tree")
+	def draw_tree(self, name):
+		plot_tree(self.tree_dict, name)
 
 	def generate_tree(self):
 		self.tree = self.recursiveGenerateTree(self.data, self.attributes)
@@ -168,8 +168,6 @@ class C45:
 		return entropy
 
 	def fit(self, data):
-		if len(data) != self.numAttributes:
-			raise Exception("Data sample is not correct value!")
 
 		node: Node = self.tree
 		considered_attr = 0
