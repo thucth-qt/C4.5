@@ -73,12 +73,12 @@ class C45:
 
 		branch ={}
 		if leftChild.is_leaf:
-			branch["<="+str(node.threshold)] = leftChild.label + "\n"+str(leftChild.pure_degree) + "\n" +str(leftChild.correct_wrong)
+			branch["<="+str(node.threshold)] = leftChild.label + "\n"+str(round(leftChild.pure_degree,2)) + "\n" +str(leftChild.correct_wrong)
 		else:
 			branch["<="+str(node.threshold)] = {leftChild.criterion: self.__recursive_generate_tree_dict(leftChild)}
 		
 		if rightChild.is_leaf:
-			branch[">"+str(node.threshold)] = rightChild.label+ "\n"+str(rightChild.pure_degree)+ "\n" +str(rightChild.correct_wrong)
+			branch[">"+str(node.threshold)] = rightChild.label+ "\n"+str(round(rightChild.pure_degree,2))+ "\n" +str(rightChild.correct_wrong)
 		else:
 			branch[">"+str(node.threshold)] = {rightChild.criterion: self.__recursive_generate_tree_dict(rightChild)}
 

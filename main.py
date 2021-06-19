@@ -1,7 +1,6 @@
 from trainer import Trainer
 from c45 import C45
 from loader import Loader
-from trainer import Trainer
 
 loader = Loader(path_to_data="data/All.xlsx", 
                 attributes=["HK01", "HK02", "HK03", "HK04","first4semesters"], 
